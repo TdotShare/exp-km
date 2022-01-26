@@ -38,10 +38,10 @@ $breadcrumb = [
 
 @endif
 
-<p>คำสำคัญที่อยู่ในโครงการทั้งหมดของนักวิจัย ด้วยใช้วิธี Term Frequency - Raw counts เพื่อหาคำสัญ </p>
-<p><b style="color: #ffdd59">สีเหลือง</b> คือ ไม่สำคัญ , มีจำนวนคำนี้อยู่น้อย </p>
-<p><b style="color: #0be881">สีเขียว</b> คือ ค่อนข้างสำคัญ , มีจำนวนคำนี้อยู่ระดับปานกลาง </p>
-<p><b style="color: #f53b57">สีแดง</b> คือ สำคัญมาก หรือ ไม่สำคัญ , มีจำนวนคำนี้อยู่เยอะและเป็นค่าโดด </p>
+<p>คำสำคัญที่อยู่ในโครงการทั้งหมดของนักวิจัย ด้วยใช้วิธี TF-IDF เพื่อหาคำสัญ </p>
+<p>N  คือ จำนวน`คำ`</p>
+<p>T  คือ จำนวน`คำ`ทั้งหมดที่มีในเอกสาร</p>
+<p>D  คือ จำนวน`เอกสาร` ที่ใช้ทั้งหมด</p>
 
 <hr>
 
@@ -64,80 +64,55 @@ $breadcrumb = [
                 <tr>
                     <th>ลำดับ</th>
                     <th>อักษร</th>
-                    <th>จำนวนที่ปรากฏ</th>
-                    <th>ระดับความสำคัญ</th>
+                    <th>จำนวนคำ</th>
+                    <th>TF (N/T)</th>
+                    <th>IDF (log(D/N))</th>
+                    <th>TF-IDF (TFxIDF)</th>
                     <th>จัดหมวดหมู่</th>
                     <th>หมวดหมู่ที่พบใกล้เตียง</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($dataText as $index => $item )
+
+                @php
+                    $data = [];
+                    $char = \App\Model\Keyword::where('text', '=', $item['text'])->first();
+                @endphp
+                
                 <tr>
                     <td>{{ $index + 1}}</td>
-                    <td><input type="text" class="form-control" name="keyword[]" value="{{$item['text']}}" readonly>
-                    </td>
+                    <td><input type="text" class="form-control" name="keyword[]" value="{{$item['text']}}" readonly></td>
                     <td>{{$item['count']}}</td>
-
-                    @if ($item['count'] >= $maxNumber)
-                    <td style="background-color: #f53b57;"></td>
-                    @else
-                    @if ($item['count'] != 1)
-                    <td style="background-color: #0be881;"></td>
-                    @else
-                    <td style="background-color: #ffdd59;"></td>
-
-                    @endif
-                    @endif
-
+                    <td>{{$item['tf_value']}}</td>
+                    <td>{{$item['idf_value']}}</td>
+                    <td>{{$item['tfidf_value']}}</td>
                     <td>
                         <select class="selectpicker form-control" name="value{{$index}}[]" data-live-search="true"
                             multiple data-selected-text-format="count">
                             @foreach ($selectItem as $el)
-                            <option value="{{$el["id"]}}">{{$el["name_th"]}}</option>
+                                @if (in_array( $el["id"] , $char ? json_decode($char->dep_id_all) :  [] ))
+                                    <option value={{$el["id"]}} selected>{{$el["name_th"]}}</option>
+                                @else
+                                    <option value={{$el["id"]}}>{{$el["name_th"]}}</option>
+                                @endif
                             @endforeach
                         </select>
                     </td>
 
-                    <td>
-
+                    <td>                 
                         @php
-                        $data = [];
-                        $char = \App\Model\Keyword::where('text', '=', $item['text'])->get();
-
-                        if(count($char) != 0){
-                            foreach ($char as $val) {
-                                foreach (json_decode($val["dep_id_all"]) as $lav) {
-                                    array_push($data , $lav);
-                                }
+                            foreach ($char ? json_decode($char->dep_id_all) : [] as $lav) {
+                                array_push($data , $lav);
                             }
-                        }else{
-                            $data = [];
-                        }
 
+                            $storechar = count($data) == 0 ? [] : \App\Model\Department::select('name_th')->whereIn("id" , $data)->get();
                         @endphp
-
-                        @if (count($data) != 0)
-
-                        @foreach ($data as $elm)
-
-                        @php
-                             $storechar = \App\Model\Department::find($elm);
-                        @endphp
-
-                        @if ($storechar)
-
-                        <span class="badge badge-primary" style="font-weight: normal; font-size: 16px;">{{$storechar["name_th"]}}</span>
-                            
-                        @endif
-            
+                      
+                        @foreach ($storechar as $item)
+                            <span class="badge badge-primary" style="font-weight: normal; font-size: 16px;">{{$item["name_th"]}}</span>
                         @endforeach
-                        @endif
-
                     </td>
-
-
-                  
-
                 </tr>
                 @endforeach
             </tbody>
@@ -160,12 +135,12 @@ $breadcrumb = [
 
 <script>
     $(function () {
-      $("#dataTable").DataTable({
-        "responsive": true,
-        "paging": false,
-        "autoWidth": true,
-        "searching": false,
-      });
+    //   $("#dataTable").DataTable({
+    //     "responsive": true,
+    //     "paging": false,
+    //     "autoWidth": true,
+    //     "searching": false,
+    //   });
 
       $('.selectpicker').selectpicker();
     });
