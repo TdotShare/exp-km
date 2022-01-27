@@ -242,7 +242,8 @@ $breadcrumb = [
     <input type="hidden" name="idRes" value="{{$model->user_id}}">
     <input type="hidden" name="idCard" value="{{$model->user_idcard}}">
 
-    <button type="submit" class="btn btn-success btn-block"><i class="fas fa-balance-scale-right"></i> ประมวลผล</button>
+    <button type="submit" name="mode" value="process" class="btn btn-success btn-block"><i class="fas fa-balance-scale-right"></i> ตรวจหาคำสำคัญ</button>
+    <button type="submit" name="mode" value="ok" class="btn btn-success btn-block"><i class="fas fa-balance-scale-right"></i> ทำนายผล</button>
 
     <br>
 

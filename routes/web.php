@@ -69,8 +69,14 @@ Route::group(['prefix' =>  '/researcher', 'middleware' => 'guest'], function () 
 
     Route::get('/', "ResearcherController@actionIndex")->name('researcher_index_page');
     Route::get('/view/{id}', "ResearcherController@actionView")->name('researcher_view_page');
+    Route::get('/exp/{id}', "ResearcherController@actionExp")->name('researcher_exp_page');
+    Route::get('/exp/delete/{id}', "ResearcherController@actionExpDelete")->name('researcher_exp_delete_data');
+    
+    Route::post('/expwork', "ResearcherController@actionCreateExpWork")->name('keyword_saveexp_data');
+
     Route::post('/setkeyword', "ResearcherController@actionSetupKeyword")->name('keyword_setup_data');
     Route::post('/savekeyword', "ResearcherController@actionCategorizeKwd")->name('keyword_savekwd_data');
+    
 
 });
 

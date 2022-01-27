@@ -98,11 +98,11 @@ $breadcrumb = [
                     data-selected-text-format="count">
                     @foreach ($selectItem as $el)
 
-                    @if (in_array($el["id"] , json_decode($model->dep_id_all) ))
-                    <option value="{{$el[" id"]}}" selected>{{$el["name_th"]}}</option>
-                    @else
-                    <option value="{{$el[" id"]}}">{{$el["name_th"]}}</option>
-                    @endif
+                        @if (in_array($el["id"] , json_decode($model->dep_id_all) ))
+                            <option value="{{$el["id"]}}" selected>{{$el["name_th"]}}</option>
+                        @else
+                            <option value="{{$el["id"]}}">{{$el["name_th"]}}</option>
+                        @endif
 
                     @endforeach
                 </select>
@@ -110,6 +110,8 @@ $breadcrumb = [
                 <div style="padding-bottom: 1%;"></div>
 
                 <button type="submit" class="btn btn-success btn-block">แก้ไขข้อมูล</button>
+
+                <div style="padding-bottom: 1%;"></div>
 
         </div>
     </div>

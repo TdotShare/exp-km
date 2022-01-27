@@ -7,7 +7,7 @@ use App\Model\Account;
 use App\Model\Bantexts;
 use App\Model\Keyword;
 use App\Model\Department;
-
+use App\Model\Expworkres;
 use App\Model\Process\Proposal;
 use App\Model\Process\Project;
 use App\Model\Process\Certificate;
@@ -85,8 +85,11 @@ class ResearcherController extends Controller
     {
 
 
-
         $data =  explode(",", $request->keywordText);
+
+        if(!isset($request->mode)){
+            return $this->responseRedirectBack("ไม่มีคำที่ใช้ประมวลผล", "warning");
+        }
 
         if (count($data) <= 1) {
             return $this->responseRedirectBack("ไม่มีคำที่ใช้ประมวลผล", "warning");
@@ -142,16 +145,14 @@ class ResearcherController extends Controller
 
         $docIdf = $proposalData + $projectData + $certificateData + $awardData + $patentData + $publicationData;
 
+        $maxTfidf_one = 0; 
+
         for ($i = 0; $i < count($dataText); $i++) {
+            $dataText[$i]["tf_value"] = round($dataText[$i]['count'] / max($numberArr), 2);       //คำนวณ Term-Frequency (TF)
+            $dataText[$i]['idf_value'] = round(log( $docIdf  / $dataText[$i]['count'] , 10) , 2); //คำนวณ Inverse Document Frequency (IDF)
+            $dataText[$i]['tfidf_value'] = round($dataText[$i]["tf_value"] * $dataText[$i]['idf_value'] , 2); //คำนวณ tfidf
 
-            //คำนวณ Term-Frequency (TF)
-            $dataText[$i]["tf_value"] = round($dataText[$i]['count'] / max($numberArr), 2);
-
-            //คำนวณ Inverse Document Frequency (IDF)
-            $dataText[$i]['idf_value'] = round(log( $docIdf  / $dataText[$i]['count'] , 10) , 2);
-
-            //คำนวณ tfidf
-            $dataText[$i]['tfidf_value'] = round($dataText[$i]["tf_value"] * $dataText[$i]['idf_value'] , 2);
+            if($dataText[$i]['tfidf_value'] > $maxTfidf_one) $maxTfidf_one = $dataText[$i]['tfidf_value'];
         }
 
         usort($dataText, function ($a, $b) {
@@ -161,15 +162,72 @@ class ResearcherController extends Controller
 
         $selectItem = Department::all();
 
-        return view("screen.account.process", [
-            "dataText" => $dataText,
-            "idRes" => $request->idRes,
-            "idModel" => $request->idModel,
-            "maxNumber" => max($numberArr),
-            "selectItem" => $selectItem
-        ]);
+        if($request->mode == "process"){
 
-        //return $dataText;
+            return view("screen.account.process", [
+                "dataText" => $dataText,
+                "idRes" => $request->idRes,
+                "idCard" => $request->idCard,
+                "maxNumber" => max($numberArr),
+                "selectItem" => $selectItem
+            ]);
+
+        }else{
+
+            $expworkData = [];
+            $departmentData = null;
+
+            $dataText = array_filter($dataText, function ($item) use ($maxTfidf_one) {
+                return ($item['tfidf_value'] == $maxTfidf_one);
+            });
+
+            foreach ($dataText as  $item) {
+
+                $keyword = Keyword::where("text", "=", $item['text']  )->first(); // like sql
+                if($keyword){
+
+                    $departmentData =  Department::whereIn("id" , json_decode($keyword->dep_id_all))->get();
+
+                    foreach ($departmentData as  $el) {
+                        array_push($expworkData , $el);
+                    }
+                }
+            }
+
+            return view("screen.account.expwork", [
+                "dataText" => $dataText,
+                "idRes" => $request->idRes,
+                "idCard" => $request->idCard,
+                "expworkData" => $expworkData
+            ]);
+
+        }
+    }
+
+    public function actionCreateExpWork(Request $request)
+    {
+        try {
+
+            if(!isset($request->boxDepId)){
+                return $this->responseRedirectRoute("researcher_index_page" , "กรุณาเลือกความเชี่ยวชาญอย่างน้อย 1 อย่าง !" , "warning");
+            }
+
+            foreach ($request->boxDepId as $data) {
+                $exp = Expworkres::where("user_idcard" , "=" , $request->idCard)->where("dep_id" , "=" , $data)->first();
+                if(!$exp){
+                    $model = new Expworkres();
+                    $model->user_idcard = $request->idCard;
+                    $model->dep_id = $data;
+                    $model->save();
+                }
+            }
+
+            return $this->responseRedirectRoute("researcher_index_page" , "บันทึกความเชี่ยวชาญ รหัสนักวิจัย ($request->idRes) สำเร็จ !");
+    
+        } catch (\Throwable $th) {
+            return $this->responseRedirectRoute("researcher_index_page" , "Error" , "danger");
+        }
+        
     }
 
     public function actionCategorizeKwd(Request $request)
@@ -177,22 +235,60 @@ class ResearcherController extends Controller
 
         $keyword = $request->keyword;
 
+
+
         foreach ($keyword as $index => $item) {
             if ($request["value$index"]) {
 
                 $model = Keyword::where("text", "=", $item)->first();
 
                 if (!$model) {
-
                     $model = new Keyword();
                     $model->text = $item;
                     $model->dep_id_all = json_encode($request["value$index"]);
-                    $model->save();
+                }else{
+                    $model->dep_id_all = json_encode($request["value$index"]);
                 }
+
+                $model->save();
             }
         }
 
         return $this->responseRedirectRoute("researcher_index_page", "จัดหมวดคำเรียบร้อย !");
+    }
+
+    public function actionExp($id)
+    {
+        $model = Account::find($id);
+
+        if($model){
+
+            $expworkData = Expworkres::where("user_idcard" , "=" , $model->user_idcard)->get();
+
+            foreach ($expworkData as $data) {
+                $depData = Department::find($data->dep_id);
+                $data['name_th'] = $depData ? $depData->name_th : "ไม่พบข้อมูล";
+            }
+
+            return view("screen.account.exp", [
+                "model" => $model,
+                "expworkData" => $expworkData
+            ]);
+
+        }else{
+            return $this->responseRedirectBack("ไม่พบข้อมูลที่ค้นหา", "warning");
+        }
+      
+    }
+
+    public function actionExpDelete($id)
+    {
+        $model = Expworkres::find($id);
+        if ($model->delete()) {
+            return $this->responseRedirectBack("ลบความเชี่ยวชาญเรียบร้อย !");
+        } else {
+            return $this->responseRedirectBack("ไม่สามารถลบข้อมูล ได้กรุณาลองใหม่อีกครั้ง !", "warning");
+        }
     }
 
     protected function responseRedirectBack($message, $status = "success", $alert = true)

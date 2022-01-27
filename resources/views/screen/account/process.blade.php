@@ -58,13 +58,13 @@ $breadcrumb = [
 
     <input type="hidden" name="count" value="{{count($dataText)}}">
 
-    <div class="table-responsive">
+   
         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
             <thead>
                 <tr>
-                    <th>ลำดับ</th>
+                    {{-- <th>ลำดับ</th> --}}
                     <th>อักษร</th>
-                    <th>จำนวนคำ</th>
+                    {{-- <th>จำนวนคำ</th> --}}
                     <th>TF (N/T)</th>
                     <th>IDF (log(D/N))</th>
                     <th>TF-IDF (TFxIDF)</th>
@@ -81,9 +81,9 @@ $breadcrumb = [
                 @endphp
                 
                 <tr>
-                    <td>{{ $index + 1}}</td>
+                    {{-- <td>{{ $index + 1}}</td> --}}
                     <td><input type="text" class="form-control" name="keyword[]" value="{{$item['text']}}" readonly></td>
-                    <td>{{$item['count']}}</td>
+                    {{-- <td>{{$item['count']}}</td> --}}
                     <td>{{$item['tf_value']}}</td>
                     <td>{{$item['idf_value']}}</td>
                     <td>{{$item['tfidf_value']}}</td>
@@ -117,11 +117,13 @@ $breadcrumb = [
                 @endforeach
             </tbody>
         </table>
-    </div>
+    
 
     <div style="padding-bottom: 1%;"></div>
 
     <button type="submit" class="btn btn-block btn-success">บันทึก</button>
+
+    <div style="padding-bottom: 1%;"></div>
 
 </form>
 
@@ -135,6 +137,7 @@ $breadcrumb = [
 
 <script>
     $(function () {
+        
     //   $("#dataTable").DataTable({
     //     "responsive": true,
     //     "paging": false,

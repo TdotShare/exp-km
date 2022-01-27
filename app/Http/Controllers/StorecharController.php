@@ -66,6 +66,9 @@ class StorecharController extends Controller
 
         if($model){
 
+            if(!isset($request->dep_all)){
+                return $this->responseRedirectBack("ไม่สามารถแก้ไขข้อมูล กรุณาเพื่มสาขาวิชาให้คำคำที่เลือก อย่างน้อย 1 คำ !" , "warning");
+            }
 
             $model->text = $request->text;
             $model->dep_id_all = json_encode($request->dep_all);
