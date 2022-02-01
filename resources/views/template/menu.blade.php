@@ -4,10 +4,10 @@
 //  ["name" => "จองห้องประชุม", "menu" => null , "url" => route("reserveroom_index_page") , "icon" => "fas fa-door-closed" , "path" => "/reserveroom"] ,
 
 $menuUser = [
-    ["name" => "Process ความเชี่ยวชาญ", "menu" => null , "url" => route("researcher_index_page")  , "icon" => "fas fa-users" , "path" => "/researcher"] ,
-    ["name" => "ความเชี่ยวชาญ", "menu" => null , "url" => route("department_index_page")  , "icon" => "fas fa-users" , "path" => "/department"] ,
-    ["name" => "คลังข้อมูลอักษร", "menu" => null , "url" => route("storechar_index_page")  , "icon" => "fas fa-users" , "path" => "/storechar"] ,
-    ["name" => "อักษรที่ไม่ถูกจัดเก็บ", "menu" => null , "url" => route("bannedchar_index_page")  , "icon" => "fas fa-users" , "path" => "/bannedchar"] ,
+    ["name" => "Process ความเชี่ยวชาญ", "menu" => null , "url" => route("researcher_index_page")  , "icon" => "fas fa-search" , "path" => "/researcher"] ,
+    ["name" => "ความเชี่ยวชาญ", "menu" => null , "url" => route("department_index_page")  , "icon" => "fas fa-map-signs" , "path" => "/department"] ,
+    ["name" => "คลังข้อมูลอักษร", "menu" => null , "url" => route("storechar_index_page")  , "icon" => "fas fa-font" , "path" => "/storechar"] ,
+    ["name" => "อักษรที่ไม่ถูกจัดเก็บ", "menu" => null , "url" => route("bannedchar_index_page")  , "icon" => "fas fa-font" , "path" => "/bannedchar"] ,
 ];
 
 //   ["name" => "จัดการห้องประชุม", "menu" => null , "url" => route("reserveroom_admin_index_page")  , "icon" => "fas fa-users" , "path" => "/admin/reserveroom"] ,

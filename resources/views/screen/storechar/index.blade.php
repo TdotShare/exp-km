@@ -63,16 +63,19 @@ $breadcrumb = [
             <td>{{$index + 1}}</td>
             <td>{{$item->text}}</td>
             <td>
-                @foreach (json_decode($item["dep_id_all"]) as $el)
+                @if ($item["dep_id_all"] != null)
+                    
+                    @foreach (json_decode($item["dep_id_all"]) as $el)
 
-                @php
-                $char = \App\Model\Department::find($el);
-                @endphp
+                    @php
+                    $char = \App\Model\Department::find($el);
+                    @endphp
 
-                <span class="badge badge-primary"
-                    style="font-weight: normal;  font-size: 16px;">{{$char["name_th"]}}</span>
+                    <span class="badge badge-primary"
+                        style="font-weight: normal;  font-size: 16px;">{{$char["name_th"]}}</span>
 
-                @endforeach
+                    @endforeach
+                @endif
             </td>
             <td><a href={{route("storechar_view_page" , ["id" => $item->id])}} ><button class="btn btn-primary btn-block"><i class="fas fa-edit"></i> แก้ไขข้อมูล</button></a></td>
             <td><a href={{route("storechar_delete_data" , ["id" => $item->id])}}><button class="btn btn-danger btn-block"><i class="fas fa-trash"></i> ลบข้อมูล</button></a></td>

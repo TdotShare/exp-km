@@ -12,6 +12,10 @@ class AuthenticationController extends Controller
     {
         $passwordHash = md5($request->password);
 
+        if($request->username != "3309901756539"){
+            return $this->responseRedirectBack("คุณไม่ได้รับสิทธิ์ให้เข้าถึงระบบนี้ !");
+        }
+
         $model = Account::where("user_idcard", "=", strtolower($request->username))->where("user_password", "=", $passwordHash)->first();
 
         if ($model) {

@@ -58,8 +58,8 @@ $breadcrumb = [
             <td>{{$item->user_first_name_th}}</td>
             <td>{{$item->user_last_name_th}}</td>
             <td>{{$item->user_mail}}</td>
-            <td><a href={{route("researcher_view_page" , ["id" => $item->user_id ])}} ><button class="btn btn-primary btn-block"><i class="fas fa-edit"></i> ดึงข้อมูลประมวลผล</button></a></td>
-            <td><a href={{route("researcher_exp_page" , ["id" => $item->user_id ])}} ><button class="btn btn-primary btn-block"><i class="fas fa-edit"></i> ความเชี่ยวชาญที่บันทึก</button></a></td>
+            <td><a href={{route("researcher_view_page" , ["id" => $item->user_id ])}} ><button class="btn btn-primary btn-block"><i class="fas fa-cloud-download-alt"></i> ดึงข้อมูลประมวลผล</button></a></td>
+            <td><a href={{route("researcher_exp_page" , ["id" => $item->user_id ])}} ><button class="btn btn-primary btn-block"><i class="fas fa-save"></i> ความเชี่ยวชาญที่บันทึก</button></a></td>
         </tr>
         @endforeach
     </tbody>

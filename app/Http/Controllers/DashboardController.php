@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Model\Activity;
+use App\Model\Department;
+use App\Model\Keyword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -10,8 +12,14 @@ class DashboardController extends Controller
 {
 
     public function actionIndex()
-    {        
-        return view("screen.dashboard.index"  , ["model" => []]);
+    {   
+        $itemChar = Keyword::count(); 
+        $itemDep = Department::count();
+           
+        return view("screen.dashboard.index" , [
+            "itemChar" => $itemChar,
+            "itemDep" => $itemDep,
+        ]);
     }
 
 

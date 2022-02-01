@@ -44,7 +44,33 @@ $breadcrumb = [
 @endif
 
 
+<div class="row">
+
+    <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-font"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">คำอ่านที่ถูกจัดหมวด</span>
+                <span class="info-box-number">{{$itemChar}} คำ</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-md-3">
+        <div class="info-box mb-3">
+            <span class="info-box-icon bg-info elevation-1"><i class="fas fa-user-graduate"></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">สาขาความเชี่ยวชาญ</span>
+                <span class="info-box-number">{{$itemDep}} สาขา</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
 @endsection
+
 
 
 @section('script_footer')

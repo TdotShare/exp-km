@@ -25,6 +25,10 @@ class StorecharController extends Controller
             return view("screen.storechar.create" , ["selectItem" => $selectItem]);
         } else {
 
+            if(!$request->dep_all){
+                return $this->responseRedirectBack("ไม่สามารถสร้างข้อมูล กรุณาเลือกสาขาอย่างน้อย 1 อย่าง !");
+            }
+
             $model = new Keyword();
             $model->text = $request->text;
             $model->dep_id_all = json_encode($request->dep_all);
